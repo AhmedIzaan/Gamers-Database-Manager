@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "queue.cpp"
 
 using namespace std;
 class Games_Played_class
@@ -219,6 +220,129 @@ public:
             currentGame = nextGame;
         }
     }
+    void savePlayerData(const string &filename)
+    {
+        ofstream file(filename);
+        if (!file.is_open())
+        {
+            cout << "Error: Could not open file " << filename << " for writing." << endl;
+            return;
+        }
+        savePlayerDataPreorder(root, file);
+        file.close();
+    }
+    void savePlayerDataPreorder(Player *node, ofstream &file)
+    {
+        if (node == nullptr)
+            return;
+
+        file << node->Player_ID << ',' << node->Name << ',' << node->Phone_Number << ','
+             << node->Email << ',' << node->Password;
+
+        Games_Played_class *currentGame = node->games_played;
+        while (currentGame)
+        {
+            file << ',' << currentGame->Game_ID << ',' << currentGame->Hours_Played << ','
+                 << currentGame->Achievements_Unlocked;
+            currentGame = currentGame->next;
+        }
+        file << '\n';
+
+        savePlayerDataPreorder(node->left, file);
+        savePlayerDataPreorder(node->right, file);
+    }
+    int getQueueSize(Queue<Player *> &q)
+    {
+        int count = 0;
+        Queue<Player *> tempQueue;
+
+        while (!q.isEmpty())
+        {
+            Player *node = q.dequeue();
+            tempQueue.enqueue(node);
+            count++;
+        }
+
+        while (!tempQueue.isEmpty())
+        {
+            q.enqueue(tempQueue.dequeue());
+        }
+
+        return count;
+    }
+    void showLayers(int N)
+    {
+        if (root == nullptr)
+        {
+            cout << "The tree is empty." << endl;
+            return;
+        }
+
+        Queue<Player *> q;
+        q.enqueue(root);
+        int currentLayer = 1;
+
+        while (!q.isEmpty() && currentLayer <= N)
+        {
+            int layerSize = getQueueSize(q);
+
+            cout << "Layer " << currentLayer << ": ";
+            for (int i = 0; i < layerSize; ++i)
+            {
+                Player *node = q.dequeue();
+
+                cout << node->Player_ID << " (" << node->Name << ") ";
+
+                if (node->left != nullptr)
+                    q.enqueue(node->left);
+                if (node->right != nullptr)
+                    q.enqueue(node->right);
+            }
+            cout << endl;
+
+            currentLayer++;
+        }
+
+        if (currentLayer <= N)
+        {
+            cout << "Layer Limit was Reached, can't go further" << endl;
+        }
+    }
+    int getPlayerLayer(const string &playerID)
+    {
+        if (root == nullptr)
+        {
+            cout << "The tree is empty." << endl;
+            return -1;
+        }
+
+        Queue<Player *> q;
+        q.enqueue(root);
+        int currentLayer = 1;
+
+        while (!q.isEmpty())
+        {
+            int layerSize = getQueueSize(q);
+
+            for (int i = 0; i < layerSize; ++i)
+            {
+                Player *node = q.dequeue();
+                if (node->Player_ID == playerID)
+                {
+                    return currentLayer;
+                }
+
+                if (node->left != nullptr)
+                    q.enqueue(node->left);
+                if (node->right != nullptr)
+                    q.enqueue(node->right);
+            }
+            currentLayer++;
+        }
+
+        cout << "Player with ID " << playerID << " not found in the tree." << endl;
+        return -1;
+    }
 };
 class GameBST
 {
@@ -331,6 +455,124 @@ public:
             cout << "Game ID: " << node->Game_ID << ", Name: " << node->Name << ", Developer: " << node->Developer << ", Publisher: " << node->Publisher << ", File Size: " << node->File_Size_in_GBs << " GBs, Downloads: " << node->Downloads << endl;
             printGames(node->right);
         }
+    }
+    void saveGameData(const string &filename)
+    {
+        ofstream file(filename);
+        if (!file.is_open())
+        {
+            cout << "Error: Could not open file " << filename << " for writing." << endl;
+            return;
+        }
+        saveGameDataPreorder(root, file);
+        file.close();
+    }
+    void saveGameDataPreorder(Game *node, ofstream &file)
+    {
+        if (node == nullptr)
+            return;
+
+        file << node->Game_ID << ',' << node->Name << ',' << node->Developer << ','
+             << node->Publisher << ',' << node->File_Size_in_GBs << ',' << node->Downloads << '\n';
+
+        saveGameDataPreorder(node->left, file);
+        saveGameDataPreorder(node->right, file);
+    }
+    int getQueueSize(Queue<Game *> &q)
+    {
+        int count = 0;
+        Queue<Game *> tempQueue;
+
+        while (!q.isEmpty())
+        {
+            Game *node = q.dequeue();
+            tempQueue.enqueue(node);
+            count++;
+        }
+
+        while (!tempQueue.isEmpty())
+        {
+            q.enqueue(tempQueue.dequeue());
+        }
+
+        return count;
+    }
+    void showLayers(int N)
+    {
+        if (root == nullptr)
+        {
+            cout << "The tree is empty." << endl;
+            return;
+        }
+
+        Queue<Game *> q;
+        q.enqueue(root);
+        int currentLayer = 1;
+
+        while (!q.isEmpty() && currentLayer <= N)
+        {
+            int layerSize = getQueueSize(q);
+
+            cout << "Layer " << currentLayer << ": ";
+            for (int i = 0; i < layerSize; ++i)
+            {
+                Game *node = q.dequeue();
+
+                cout << node->Game_ID << " (" << node->Name << ") ";
+
+                if (node->left != nullptr)
+                {
+                    q.enqueue(node->left);
+                }
+                if (node->right != nullptr)
+                {
+                    q.enqueue(node->right);
+                }
+            }
+            cout << endl;
+
+            currentLayer++;
+        }
+
+        if (currentLayer <= N)
+        {
+            cout << "Layer Limit was Reached, can't go further" << endl;
+        }
+    }
+    int getGameLayer(const string &gameID)
+    {
+        if (root == nullptr)
+        {
+            cout << "The tree is empty." << endl;
+            return -1;
+        }
+
+        Queue<Game *> q;
+        q.enqueue(root);
+        int currentLayer = 1;
+
+        while (!q.isEmpty())
+        {
+            int layerSize = getQueueSize(q); 
+
+            for (int i = 0; i < layerSize; ++i)
+            {
+                Game *node = q.dequeue();
+                if (node->Game_ID == gameID)
+                {
+                    return currentLayer;
+                }
+
+                if (node->left != nullptr)
+                    q.enqueue(node->left);
+                if (node->right != nullptr)
+                    q.enqueue(node->right);
+            }
+            currentLayer++;
+        }
+
+        cout << "Game with ID " << gameID << " not found in the tree." << endl;
+        return -1; 
     }
 };
 
@@ -472,21 +714,80 @@ int main()
         cout << "\nMenu:\n";
         cout << "0. Exit\n";
         cout << "1. Search Player and Game\n";
-        cout << "2.Delete Player and Game\n";
-        cout << "Enter your choice: ";
+        cout << "2. Delete Player and Game\n";
+        cout << "3. save Player and Game data\n";
+        cout << "4. Show player layers\n";
+        cout << "5. Show game layers\n";
+        cout << "6. Get player layer and Game layer according to their ids\n";
+        cout << "Enter your choice: \n";
         cin >> choice;
 
         switch (choice)
         {
         case 0:
+        {
+
             cout << "Exiting...\n";
             break;
+        }
         case 1:
+        {
             searchAndPrint(playerTree, gameTree);
             break;
+        }
+
         case 2:
+        {
             deletePlayerAndGame(playerTree, gameTree);
             break;
+        }
+
+        case 3:
+        {
+            playerTree.savePlayerData("PlayersBackup.csv");
+            gameTree.saveGameData("GamesBackup.csv");
+            cout << "Data saved to PlayersBackup.csv and GamesBackup.csv successfully." << endl;
+        }
+
+        case 4:
+        {
+            int layers;
+            cout << "Enter the number of layers to display for the player tree: ";
+            cin >> layers;
+            playerTree.showLayers(layers);
+            break;
+        }
+
+        case 5:
+        {
+            int layers;
+            cout << "Enter the number of layers to display for the game tree: ";
+            cin >> layers;
+            gameTree.showLayers(layers);
+            break;
+        }
+        case 6:
+        {
+            string playerID;
+            cout << "Enter Player ID to find layer number: ";
+            cin >> playerID;
+            int playerLayer = playerTree.getPlayerLayer(playerID);
+            if (playerLayer != -1)
+            {
+                cout << "Player with ID " << playerID << " is in layer " << playerLayer << "." << endl;
+            }
+
+            string gameID;
+            cout << "Enter Game ID to find layer number: ";
+            cin >> gameID;
+            int gameLayer = gameTree.getGameLayer(gameID);
+            if (gameLayer != -1)
+            {
+                cout << "Game with ID " << gameID << " is in layer " << gameLayer << "." << endl;
+            }
+            break;
+        }
+
         default:
             cout << "Invalid choice. Please try again.\n";
         }
