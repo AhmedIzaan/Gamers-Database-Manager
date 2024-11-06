@@ -860,6 +860,40 @@ void editGameEntry(GameBST &gameTree, const string &oldGameID)
         cout << "Game details updated.\n";
     }
 }
+void showPlayerDetails(playerBST &playerTree, GameBST &gameTree)
+{
+    string searchPlayerID;
+    cout << "Enter Player ID to show details: \n";
+    cin >> searchPlayerID;
+
+    Player *player = playerTree.searchPlayer(searchPlayerID);
+    if (player == nullptr)
+    {
+        cout << "Player with ID " << searchPlayerID << " not found.\n";
+        return;
+    }
+
+    cout << "\nPlayer Details:\n";
+    player->printPlayerInfo();
+
+    cout << "\nGames Played by " << player->Name << ":\n";
+    Games_Played_class *currentGame = player->games_played;
+    while (currentGame != nullptr)
+    {
+        Game *game = gameTree.searchGame(currentGame->Game_ID);
+        if (game != nullptr)
+        {
+            game->printGameInfo();
+        }
+        else
+        {
+            cout << "Game with ID " << currentGame->Game_ID << " not found in game database.\n";
+        }
+        currentGame = currentGame->next;
+        cout << endl;
+    }
+}
+
 int main()
 {
     playerBST playerTree;
@@ -882,6 +916,7 @@ int main()
         cout << "7. Show search path of players and games\n";
         cout << "8. Edit Player Entry\n";
         cout << "9. Edit Game Entry\n";
+        cout << "10. Show player details and their games\n";
         cout << "Enter your choice: \n";
         cin >> choice;
 
@@ -977,6 +1012,11 @@ int main()
             cout << "Enter Game ID to edit: ";
             cin >> gameID;
             editGameEntry(gameTree, gameID);
+            break;
+        }
+        case 10:
+        {
+            showPlayerDetails(playerTree, gameTree);
             break;
         }
         default:
