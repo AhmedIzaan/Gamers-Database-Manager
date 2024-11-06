@@ -762,6 +762,104 @@ void deletePlayerAndGame(playerBST &playerTree, GameBST &gameTree)
     gameTree.deleteGame(deleteGameID);
     cout << "Game with ID " << deleteGameID << " deleted.\n";
 }
+void editPlayerEntry(playerBST &playerTree, const string &oldPlayerID)
+{
+
+    Player *player = playerTree.searchPlayer(oldPlayerID);
+    if (player == nullptr)
+    {
+        cout << "Player with ID " << oldPlayerID << " not found.\n";
+        return;
+    }
+
+    cout << "Current Player Info:\n";
+    player->printPlayerInfo();
+
+    string newPlayerID, name, phone, email, password;
+    cout << "\nEnter new Player ID (or press Enter to keep current ID): ";
+    cin.ignore();
+    getline(cin, newPlayerID);
+    cout << "Enter new Name: ";
+    getline(cin, name);
+    cout << "Enter new Phone Number: ";
+    getline(cin, phone);
+    cout << "Enter new Email: ";
+    getline(cin, email);
+    cout << "Enter new Password: ";
+    getline(cin, password);
+
+    if (!newPlayerID.empty() && newPlayerID != oldPlayerID)
+    {
+
+        playerTree.deletePlayer(oldPlayerID);
+
+        Player *newPlayer = new Player(newPlayerID, name, phone, email, password);
+        newPlayer->games_played = player->games_played;
+
+        playerTree.insertPlayer(newPlayer);
+        cout << "Player ID changed. Repositioned in the tree.\n";
+    }
+    else
+    {
+
+        player->Name = name;
+        player->Phone_Number = phone;
+        player->Email = email;
+        player->Password = password;
+        cout << "Player details updated.\n";
+    }
+}
+void editGameEntry(GameBST &gameTree, const string &oldGameID)
+{
+
+    Game *game = gameTree.searchGame(oldGameID);
+    if (game == nullptr)
+    {
+        cout << "Game with ID " << oldGameID << " not found.\n";
+        return;
+    }
+
+    cout << "Current Game Info:\n";
+    game->printGameInfo();
+
+    string newGameID, name, developer, publisher;
+    float fileSize;
+    int downloads;
+    cout << "\nEnter new Game ID (or press Enter to keep current ID): ";
+    cin.ignore();
+    getline(cin, newGameID);
+    cout << "Enter new Name: ";
+    getline(cin, name);
+    cout << "Enter new Developer: ";
+    getline(cin, developer);
+    cout << "Enter new Publisher: ";
+    getline(cin, publisher);
+    cout << "Enter new File Size in GBs: ";
+    cin >> fileSize;
+    cout << "Enter new Downloads: ";
+    cin >> downloads;
+
+    if (!newGameID.empty() && newGameID != oldGameID)
+    {
+
+        gameTree.deleteGame(oldGameID);
+
+        Game *newGame = new Game(newGameID, name, developer, publisher, fileSize, downloads);
+
+        gameTree.insertGame(newGame);
+        cout << "Game ID changed. Repositioned in the tree.\n";
+    }
+    else
+    {
+
+        game->Name = name;
+        game->Developer = developer;
+        game->Publisher = publisher;
+        game->File_Size_in_GBs = fileSize;
+        game->Downloads = downloads;
+        cout << "Game details updated.\n";
+    }
+}
 int main()
 {
     playerBST playerTree;
@@ -782,6 +880,8 @@ int main()
         cout << "5. Show game layers\n";
         cout << "6. Get player layer and Game layer according to their ids\n";
         cout << "7. Show search path of players and games\n";
+        cout << "8. Edit Player Entry\n";
+        cout << "9. Edit Game Entry\n";
         cout << "Enter your choice: \n";
         cin >> choice;
 
@@ -863,7 +963,22 @@ int main()
             gameTree.printGamePath(gameID);
             break;
         }
-
+        case 8:
+        {
+            string playerID;
+            cout << "Enter Player ID to edit: ";
+            cin >> playerID;
+            editPlayerEntry(playerTree, playerID);
+            break;
+        }
+        case 9:
+        {
+            string gameID;
+            cout << "Enter Game ID to edit: ";
+            cin >> gameID;
+            editGameEntry(gameTree, gameID);
+            break;
+        }
         default:
             cout << "Invalid choice. Please try again.\n";
         }
