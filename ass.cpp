@@ -343,6 +343,37 @@ public:
         cout << "Player with ID " << playerID << " not found in the tree." << endl;
         return -1;
     }
+    bool showPlayerPath(Player *node, const string &playerID)
+    {
+        if (node == nullptr)
+            return false;
+
+        cout << node->Player_ID << " ";
+
+        if (node->Player_ID == playerID)
+        {
+            cout << endl;
+            return true;
+        }
+
+        if (playerID < node->Player_ID)
+        {
+            return showPlayerPath(node->left, playerID);
+        }
+        else
+        {
+            return showPlayerPath(node->right, playerID);
+        }
+    }
+
+    void printPlayerPath(const string &playerID)
+    {
+        cout << "Preorder Traversal Path to find Player ID " << playerID << ": ";
+        if (!showPlayerPath(root, playerID))
+        {
+            cout << "\nPlayer with ID " << playerID << " not found." << endl;
+        }
+    }
 };
 class GameBST
 {
@@ -553,7 +584,7 @@ public:
 
         while (!q.isEmpty())
         {
-            int layerSize = getQueueSize(q); 
+            int layerSize = getQueueSize(q);
 
             for (int i = 0; i < layerSize; ++i)
             {
@@ -572,7 +603,38 @@ public:
         }
 
         cout << "Game with ID " << gameID << " not found in the tree." << endl;
-        return -1; 
+        return -1;
+    }
+    bool showGamePath(Game *node, const string &gameID)
+    {
+        if (node == nullptr)
+            return false;
+
+        cout << node->Game_ID << " ";
+
+        if (node->Game_ID == gameID)
+        {
+            cout << endl;
+            return true;
+        }
+
+        if (gameID < node->Game_ID)
+        {
+            return showGamePath(node->left, gameID);
+        }
+        else
+        {
+            return showGamePath(node->right, gameID);
+        }
+    }
+
+    void printGamePath(const string &gameID)
+    {
+        cout << "Preorder Traversal Path to find Game ID " << gameID << ": ";
+        if (!showGamePath(root, gameID))
+        {
+            cout << "\nGame with ID " << gameID << " not found." << endl;
+        }
     }
 };
 
@@ -719,6 +781,7 @@ int main()
         cout << "4. Show player layers\n";
         cout << "5. Show game layers\n";
         cout << "6. Get player layer and Game layer according to their ids\n";
+        cout << "7. Show search path of players and games\n";
         cout << "Enter your choice: \n";
         cin >> choice;
 
@@ -785,6 +848,19 @@ int main()
             {
                 cout << "Game with ID " << gameID << " is in layer " << gameLayer << "." << endl;
             }
+            break;
+        }
+        case 7:
+        {
+            string playerID;
+            cout << "Enter Player ID to show search path: ";
+            cin >> playerID;
+            playerTree.printPlayerPath(playerID);
+
+            string gameID;
+            cout << "Enter Game ID to show search path: ";
+            cin >> gameID;
+            gameTree.printGamePath(gameID);
             break;
         }
 
